@@ -1,2 +1,2 @@
 # Messenger
-Java messenger 
+Java messenger with a client-server model
