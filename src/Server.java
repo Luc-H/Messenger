@@ -13,7 +13,8 @@ import java.io.IOException;
  */
 public class Server {
 
-	private static int portNum;
+
+	private int portNum;
 
 	Server(int portNum) {
 		this.portNum = portNum;
@@ -40,8 +41,14 @@ public class Server {
 
 			System.out.println("Waiting for client to respond.");
 
-			//TODO Implement Client data.
-			//TODO Receive and process data from clients.
+			String clientMessage = clientInput.readLine();
+			System.out.println("Received from client: "+clientMessage);
+			clientOutput.writeBytes("Received: "+clientMessage);
+
+			clientOutput.close();
+			clientInput.close();
+			connectionSock.close();
+			serverSock.close();
 
 		}
 		catch (IOException e) {
@@ -51,10 +58,36 @@ public class Server {
 
 
 	public static void main(String[] args){
-		System.out.println("Running standalone Client.");
-		Scanner in = new Scanner(System.in);
-		
-		portNum = in.nextInt();
+		System.out.println("Running standalone Client on port 8976.");
+      
+      try {
+			System.out.println("Initialising server on port " + 8976 + ".");
+
+			ServerSocket serverSock = new ServerSocket(8976);
+
+			//ServerSocket.accept() returns the socket connecting to this server, allows the client to connect proactively.
+			Socket connectionSock = serverSock.accept();
+
+			// Use a BufferedReader as it reads the data stream rather than blocking until
+			// receiving an end of line character.
+			BufferedReader clientInput = new BufferedReader(new InputStreamReader(connectionSock.getInputStream()));
+			DataOutputStream clientOutput = new DataOutputStream(connectionSock.getOutputStream());
+
+			System.out.println("Waiting for client to respond.");
+
+			String clientMessage = clientInput.readLine();
+			System.out.println("Received from client: "+clientMessage);
+			clientOutput.writeBytes("Received: "+clientMessage);
+
+			clientOutput.close();
+			clientInput.close();
+			connectionSock.close();
+			serverSock.close();
+
+		}
+		catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
 	}
 }
 

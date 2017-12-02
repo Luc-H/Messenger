@@ -12,8 +12,8 @@ import java.io.IOException;
  */
 public class Client{
 
-	private static String hostName;
-	private static int port;
+	private String hostName;
+	private int port;
 
 	Client(String hostName, int port){
 		this.hostName = hostName;
@@ -54,10 +54,32 @@ public class Client{
 	}
 
 	public static void main(String[] args){
-		System.out.println("Running standalone Client.");
-		Scanner in = new Scanner(System.in);
+		System.out.println("Running standalone Client on port 8976 at localhost");
 		
-		hostName = in.nextLine();
-		port = in.nextInt();
+      try{
+			System.out.println("Connecting to server on port: "+8976);
+
+			//Creates a stream socket and connects it to the specified port number on the named host.
+			Socket connectionSock = new Socket("localhost", 8976);
+
+			BufferedReader serverInput = new BufferedReader(new InputStreamReader(connectionSock.getInputStream()));
+			DataOutputStream serverOutput = new DataOutputStream(connectionSock.getOutputStream());
+
+			System.out.println("Connection established, sending test string.");
+
+			serverOutput.writeBytes("Test");
+			System.out.println("Waiting on reply.");
+
+			String serverReponse = serverInput.readLine();
+			System.out.println("Received from servrer: "+serverReponse);
+
+			serverInput.close();
+			serverOutput.close();
+			connectionSock.close();
+
+		}catch(IOException e){
+			System.err.println(e.getMessage());
+		}      
+      
 	}
 }
