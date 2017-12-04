@@ -1,3 +1,5 @@
+package textbookExample;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,10 +15,12 @@ public class DateServer {
 			System.out.println("Waiting for a connection on port 7654.");
 			ServerSocket serverSock = new ServerSocket(7654);
 			Socket connectionSock = serverSock.accept();
+
 			BufferedReader clientInput = new BufferedReader(
 					new InputStreamReader(connectionSock.getInputStream()));
 			DataOutputStream clientOutput = new DataOutputStream(
 					connectionSock.getOutputStream());
+
 			System.out.println("Connection made, waiting for client " +
 							   "to send their name.");
 			String clientText = clientInput.readLine();
@@ -24,6 +28,7 @@ public class DateServer {
 							   ", Today is " + now.toString() + "\n";
 			clientOutput.writeBytes(replyText);
 			System.out.println("Sent: " + replyText);
+
 			clientOutput.close();
 			clientInput.close();
 			connectionSock.close();

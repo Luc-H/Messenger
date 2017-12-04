@@ -1,6 +1,7 @@
-/**
- * Created: Dec 2017
- * luc
+package textbookExample;
+/*
+  Created: Dec 2017
+  luc
  */
 
 import java.io.BufferedReader;
@@ -16,19 +17,21 @@ public class DateClient {
 		try {
 			String hostname = "localhost";
 			int port = 7654;
+
 			System.out.println("Connecting to server on port " + port);
 			Socket connectionSock = new Socket(hostname, port);
+
 			BufferedReader serverInput = new BufferedReader(
 					new InputStreamReader(connectionSock.getInputStream()));
-
 			DataOutputStream serverOutput = new DataOutputStream(connectionSock.getOutputStream());
-			String serverData = serverInput.readLine();
+
 			System.out.println("Connection made, sending name.");
 			serverOutput.writeBytes("Dusty Rhodes\n");
+
 			System.out.println("Waiting for reply.");
-
-
+			String serverData = serverInput.readLine();
 			System.out.println("Received: " + serverData);
+
 			serverOutput.close();
 			serverInput.close();
 			connectionSock.close();
