@@ -1,16 +1,13 @@
-import java.util.Date;
-import java.util.Scanner;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.io.DataOutputStream;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
 
 /**
  * Rudimentary Client class (See Absolute Java p1140)
  */
-public class Client{
+public class Client {
 
 	private String hostName;
 	private int port;
@@ -21,6 +18,8 @@ public class Client{
 
 		initialise();
 	}
+
+
 
 	/**
 	 * Initialise the client instance.
@@ -40,8 +39,8 @@ public class Client{
 			serverOutput.writeBytes("Test");
 			System.out.println("Waiting on reply.");
 
-			String serverReponse = serverInput.readLine();
-			System.out.println("Received from servrer: "+serverReponse);
+			String serverResponse = serverInput.readLine();
+			System.out.println("Received from server: "+serverResponse);
 
 			serverInput.close();
 			serverOutput.close();
@@ -53,12 +52,11 @@ public class Client{
 
 	}
 
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		System.out.println("Running standalone Client on port 8976 at localhost");
-		
-      try{
-			System.out.println("Connecting to server on port: "+8976);
 
+		try {
+			System.out.println("Connecting to server on port: " + 8976);
 			//Creates a stream socket and connects it to the specified port number on the named host.
 			Socket connectionSock = new Socket("localhost", 8976);
 
@@ -66,20 +64,21 @@ public class Client{
 			DataOutputStream serverOutput = new DataOutputStream(connectionSock.getOutputStream());
 
 			System.out.println("Connection established, sending test string.");
+			//Must include eof character to terminate message.
+			serverOutput.writeBytes("Test\n");
 
-			serverOutput.writeBytes("Test");
 			System.out.println("Waiting on reply.");
-
 			String serverReponse = serverInput.readLine();
-			System.out.println("Received from servrer: "+serverReponse);
+			System.out.println("Received from server: " + serverReponse);
 
 			serverInput.close();
 			serverOutput.close();
 			connectionSock.close();
 
-		}catch(IOException e){
+		}
+		catch (IOException e) {
 			System.err.println(e.getMessage());
-		}      
-      
+		}
+
 	}
 }
