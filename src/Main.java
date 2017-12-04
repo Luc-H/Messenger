@@ -6,9 +6,10 @@ public class Main
 		int port = 8965;
 		String hostName = "localhost";
 
+		//TODO Threading
 		//TODO Implement Client Server creation
 		//TODO GUI
-		//TODO Threading
+
 	}
 
 }

@@ -1,11 +1,9 @@
-import java.util.Date;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.io.DataOutputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
 
 
 /**
@@ -64,7 +62,6 @@ public class Server {
 			System.out.println("Initialising server on port " + 8976 + ".");
 
 			ServerSocket serverSock = new ServerSocket(8976);
-
 			//ServerSocket.accept() returns the socket connecting to this server, allows the client to connect proactively.
 			Socket connectionSock = serverSock.accept();
 
@@ -73,11 +70,10 @@ public class Server {
 			BufferedReader clientInput = new BufferedReader(new InputStreamReader(connectionSock.getInputStream()));
 			DataOutputStream clientOutput = new DataOutputStream(connectionSock.getOutputStream());
 
-			System.out.println("Waiting for client to respond.");
-
+			System.out.println("Waiting for client to send data.");
 			String clientMessage = clientInput.readLine();
 			System.out.println("Received from client: "+clientMessage);
-			clientOutput.writeBytes("Received: "+clientMessage);
+			clientOutput.writeBytes("Received: "+clientMessage+"\n");
 
 			clientOutput.close();
 			clientInput.close();
