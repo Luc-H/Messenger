@@ -58,10 +58,10 @@ public class Client {
 		String hostName;
 
 		Scanner inKb = new Scanner(new InputStreamReader(System.in));
-		String line = inKb.nextLine();
+		String line = "";
 
 		BufferedReader serverInput;
-		DataOutputStream serverOutput = null;
+		DataOutputStream serverOutput;
 		Socket connectionSock;
 
 		try {
@@ -75,9 +75,9 @@ public class Client {
 			serverOutput = new DataOutputStream(connectionSock.getOutputStream());
 
 			while (!line.toUpperCase().equals("EXIT")) {
-				System.out.println("Enter message to send (type '!EXIT' to quit).");
+				System.out.println("Enter message to send or type '!EXIT' to quit.");
 				String message = inKb.nextLine();
-				serverOutput.writeBytes(message);
+				serverOutput.writeBytes(message + "\n");
 				String response = serverInput.readLine();
 				System.out.println(response);
 			}
@@ -92,5 +92,5 @@ public class Client {
 
 	}
 
-}
+
 }

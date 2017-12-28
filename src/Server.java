@@ -60,25 +60,18 @@ public class Server {
       
       try {
 			System.out.println("Initialising server on port " + 8976 + ".");
-
 			ServerSocket serverSock = new ServerSocket(8976);
-			//ServerSocket.accept() returns the socket connecting to this server, allows the client to connect proactively.
-			Socket connectionSock = serverSock.accept();
 
-			// Use a BufferedReader as it reads the data stream rather than blocking until
-			// receiving an end of line character.
-			BufferedReader clientInput = new BufferedReader(new InputStreamReader(connectionSock.getInputStream()));
-			DataOutputStream clientOutput = new DataOutputStream(connectionSock.getOutputStream());
+		  while (true) {
+			  //ServerSocket.accept() returns the socket connecting to this server, allows the client to connect proactively.
+			  Socket connectionSock = serverSock.accept();
+			  System.out.println("Connection received");
+			  ClientHandler handler = new ClientHandler(connectionSock);
+			  Thread newThread = new Thread(handler);
+			  newThread.start();
 
-			System.out.println("Waiting for client to send data.");
-			String clientMessage = clientInput.readLine();
-			System.out.println("Received from client: "+clientMessage);
-			clientOutput.writeBytes("Received: "+clientMessage+"\n");
+		  }
 
-			clientOutput.close();
-			clientInput.close();
-			connectionSock.close();
-			serverSock.close();
 
 		}
 		catch (IOException e) {
