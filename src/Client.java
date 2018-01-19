@@ -13,45 +13,6 @@ public class Client {
 	private String hostName;
 	private int port;
 
-	Client(String hostName, int port) {
-		this.hostName = hostName;
-		this.port = port;
-
-		initialise();
-	}
-
-
-	/**
-	 * Initialise the client instance.
-	 */
-	private void initialise() {
-		try {
-			System.out.println("Connecting to server on port: " + port);
-
-			//Creates a stream socket and connects it to the specified port number on the named host.
-			Socket connectionSock = new Socket(hostName, port);
-
-			BufferedReader serverInput = new BufferedReader(new InputStreamReader(connectionSock.getInputStream()));
-			DataOutputStream serverOutput = new DataOutputStream(connectionSock.getOutputStream());
-
-			System.out.println("Connection established, sending test string.");
-
-			serverOutput.writeBytes("Test");
-			System.out.println("Waiting on reply.");
-
-			String serverResponse = serverInput.readLine();
-			System.out.println("Received from server: " + serverResponse);
-
-			serverInput.close();
-			serverOutput.close();
-			connectionSock.close();
-
-		}
-		catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
-
-	}
 
 	public static void main(String[] args) {
 		int port = 8976;
@@ -74,14 +35,18 @@ public class Client {
 			serverInput = new BufferedReader(new InputStreamReader(connectionSock.getInputStream()));
 			serverOutput = new DataOutputStream(connectionSock.getOutputStream());
 
-			while (!line.toUpperCase().equals("EXIT")) {
-				System.out.println("Enter message to send or type '!EXIT' to quit.");
+			while (true) {
+				System.out.println("Enter message to send (type '!EXIT' to quit).");
 				String message = inKb.nextLine();
-				serverOutput.writeBytes(message + "\n");
+				if (message.equals("!EXIT")) {
+					break;
+				}
+				serverOutput.writeBytes(message);
 				String response = serverInput.readLine();
 				System.out.println(response);
 			}
 
+			serverOutput.writeBytes("!EXIT");
 			connectionSock.close();
 			serverInput.close();
 			serverOutput.close();

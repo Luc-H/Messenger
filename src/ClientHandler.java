@@ -4,13 +4,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+/**
+ * Created: Dec 2017
+ * luc
+ */
 public class ClientHandler implements Runnable {
 
 	private Socket connectionSock;
 
-	ClientHandler(Socket connectionSock) {
+	public ClientHandler() {
+		this(null);
+	}
+
+	public ClientHandler(Socket connectionSock) {
 		this.connectionSock = connectionSock;
 	}
+
 
 	/**
 	 * When an object implementing interface <code>Runnable</code> is used
@@ -25,30 +34,38 @@ public class ClientHandler implements Runnable {
 	 */
 	@Override
 	public void run() {
-		try {
-			// Use a BufferedReader as it reads the data stream rather than blocking until
-			// receiving an end of line character.
-			BufferedReader clientInput = new BufferedReader(new InputStreamReader(connectionSock.getInputStream()));
-			DataOutputStream clientOutput = new DataOutputStream(connectionSock.getOutputStream());
+		BufferedReader clientInput = null;
+		DataOutputStream clientOutput = null;
+		String clientMessage = "";
 
-			while (true) {
+		while (!clientMessage.equals("!EXIT")) {
+			try{
+				// Use a BufferedReader as it reads the data stream rather than blocking until
+				// receiving an end of line character.
+				clientInput = new BufferedReader(new InputStreamReader(connectionSock.getInputStream()));
+				clientOutput = new DataOutputStream(connectionSock.getOutputStream());
+
+
 				System.out.println("Waiting for client to send data.");
-				String clientMessage = clientInput.readLine();
-				if (clientMessage.equals("!EXIT")) {
-					break;
-				}
+				clientMessage = clientInput.readLine();
 				System.out.println("Received from client: " + clientMessage);
+
 				clientOutput.writeBytes("Received: " + clientMessage + "\n");
 			}
+			catch (IOException e) {
+				System.err.println("Unable to read/write client data:");
+				e.printStackTrace();
+			}
+		}
 
+		try {
 			clientOutput.close();
 			clientInput.close();
 			connectionSock.close();
-
-
 		}
-		catch (IOException ex) {
-			System.err.println("Issue communicating with client\n\n" + ex.getMessage());
+		catch (IOException e) {
+			System.err.println("Error closing connections:");
+			e.printStackTrace();
 		}
 	}
 
