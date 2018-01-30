@@ -12,13 +12,16 @@ public class Client {
 
 	private static String hostName;
 	private static int port = 8976;
+	private static String name;
 
 	public static void main(String[] args) {
 		Scanner inKb = new Scanner(new InputStreamReader(System.in));
 		String line = "";
+		System.out.println("Please enter your name:");
+		name = inKb.nextLine();
 
-		BufferedReader serverInput;
-		DataOutputStream serverOutput;
+		BufferedReader serverOutput;
+		DataOutputStream serverInput;
 		Socket connectionSock;
 
 		try {
@@ -28,20 +31,25 @@ public class Client {
 			//Creates a stream socket and connects it to the specified port number on the named host.
 			connectionSock = new Socket(hostName, port);
 
-			serverInput = new BufferedReader(new InputStreamReader(connectionSock.getInputStream()));
-			serverOutput = new DataOutputStream(connectionSock.getOutputStream());
+			serverOutput = new BufferedReader(new InputStreamReader(connectionSock.getInputStream()));
+			serverInput = new DataOutputStream(connectionSock.getOutputStream());
+
+			//First input to server is client name.
+			serverInput.writeBytes(name + "\n");
+
 
 			while (!line.toUpperCase().equals("EXIT")) {
 				System.out.println("Enter message to send or type '!EXIT' to quit.");
 				String message = inKb.nextLine();
-				serverOutput.writeBytes(message + "\n");
-				String response = serverInput.readLine();
+				serverInput.writeBytes(message + "\n");
+
+				String response = serverOutput.readLine();
 				System.out.println(response);
 			}
 
 			connectionSock.close();
-			serverInput.close();
 			serverOutput.close();
+			serverInput.close();
 		}
 		catch (IOException e) {
 			System.err.println(e.getMessage());

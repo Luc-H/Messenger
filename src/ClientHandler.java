@@ -7,6 +7,7 @@ import java.net.Socket;
 public class ClientHandler implements Runnable {
 
 	private Socket connectionSock;
+	private String name;
 
 	ClientHandler(Socket connectionSock) {
 		this.connectionSock = connectionSock;
@@ -28,27 +29,30 @@ public class ClientHandler implements Runnable {
 		try {
 			// Use a BufferedReader as it reads the data stream rather than blocking until
 			// receiving an end of line character.
-			BufferedReader clientInput = new BufferedReader(new InputStreamReader(connectionSock.getInputStream()));
-			DataOutputStream clientOutput = new DataOutputStream(connectionSock.getOutputStream());
+			BufferedReader clientOutput = new BufferedReader(new InputStreamReader(connectionSock.getInputStream()));
+			DataOutputStream clientInput = new DataOutputStream(connectionSock.getOutputStream());
+			name = clientOutput.readLine();
+			//First output from client is client name.
+			Thread.currentThread().setName(name);
 
 			while (true) {
-				System.out.println("Waiting for client to send data.");
-				String clientMessage = clientInput.readLine();
+				System.out.println("Waiting for client(" + name + ") to send data.");
+				String clientMessage = clientOutput.readLine();
 				if (clientMessage.equals("!EXIT")) {
 					break;
 				}
-				System.out.println("Received from client: " + clientMessage);
-				clientOutput.writeBytes("Received: " + clientMessage + "\n");
+				System.out.println("Received from client:(" + name + ") " + clientMessage);
+				clientInput.writeBytes("Received: " + clientMessage + "\n");
 			}
 
-			clientOutput.close();
 			clientInput.close();
+			clientOutput.close();
 			connectionSock.close();
 
 
 		}
 		catch (IOException ex) {
-			System.err.println("Issue communicating with client\n\n" + ex.getMessage());
+			System.err.println("Issue communicating with client(" + name + ")\n\n" + ex.getMessage());
 		}
 	}
 

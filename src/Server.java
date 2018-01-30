@@ -15,7 +15,7 @@ public class Server {
 	private static ArrayList<Thread> clientThreadPool;
 
 	public static void main(String[] args){
-		System.out.println("Running standalone Client on port 8976.");
+		clientThreadPool = new ArrayList<>(5);
       
       try {
 		  System.out.println("Initialising server on port " + portNum + ".");
@@ -28,13 +28,20 @@ public class Server {
 			  ClientHandler handler = new ClientHandler(connectionSock);
 			  Thread newThread = new Thread(handler);
 			  newThread.start();
-
+			  clientThreadPool.add(newThread);
+			  showClients();
 		  }
 
 
 		}
 		catch (IOException e) {
 			System.err.println(e.getMessage());
+		}
+	}
+
+	public static void showClients() {
+		for (Thread t : clientThreadPool) {
+			System.out.println(t.getName());
 		}
 	}
 }
