@@ -16,7 +16,7 @@ public class Client {
 
 	public static void main(String[] args) {
 		Scanner inKb = new Scanner(new InputStreamReader(System.in));
-		String line = "";
+		String message = "";
 		System.out.println("Please enter your name:");
 		name = inKb.nextLine();
 
@@ -38,10 +38,13 @@ public class Client {
 			serverInput.writeBytes(name + "\n");
 
 
-			while (!line.toUpperCase().equals("EXIT")) {
+			while (true) {
 				System.out.println("Enter message to send or type '!EXIT' to quit.");
-				String message = inKb.nextLine();
+				message = inKb.nextLine();
 				serverInput.writeBytes(message + "\n");
+				if (message.equals("!EXIT")) {
+					break;
+				}
 
 				String response = serverOutput.readLine();
 				System.out.println(response);

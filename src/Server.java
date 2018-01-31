@@ -12,25 +12,25 @@ public class Server {
 
 	private static int portNum = 8976;
 	//Should be a threadpool
-	private static ArrayList<Thread> clientThreadPool;
+	private static ArrayList<ClientHandler> clientPool;
 
-	public static void main(String[] args){
-		clientThreadPool = new ArrayList<>(5);
-      
-      try {
-		  System.out.println("Initialising server on port " + portNum + ".");
-		  ServerSocket serverSock = new ServerSocket(portNum);
+	public static void main(String[] args) {
+		clientPool = new ArrayList<>(5);
 
-		  while (true) {
-			  //ServerSocket.accept() returns the socket connecting to this server, allows the client to connect proactively.
-			  Socket connectionSock = serverSock.accept();
-			  System.out.println("Connection received");
-			  ClientHandler handler = new ClientHandler(connectionSock);
-			  Thread newThread = new Thread(handler);
-			  newThread.start();
-			  clientThreadPool.add(newThread);
-			  showClients();
-		  }
+		try {
+			System.out.println("Initialising server on port " + portNum + ".");
+			ServerSocket serverSock = new ServerSocket(portNum);
+
+			while (true) {
+				//ServerSocket.accept() returns the socket connecting to this server, allows the client to connect proactively.
+				Socket connectionSock = serverSock.accept();
+				System.out.println("Connection received");
+				ClientHandler handler = new ClientHandler(connectionSock);
+				Thread newThread = new Thread(handler);
+				newThread.start();
+				clientPool.add(handler);
+				showClients();
+			}
 
 
 		}
@@ -39,10 +39,19 @@ public class Server {
 		}
 	}
 
-	public static void showClients() {
-		for (Thread t : clientThreadPool) {
-			System.out.println(t.getName());
+	public static void broadcastMessage(String message) {
+		for (ClientHandler c : clientPool) {
+			System.out.println("Sending message to " + c.getName());
+			c.sendMessage(message);
 		}
 	}
+
+	public static void showClients() {
+		for (ClientHandler c : clientPool) {
+			System.out.println(c.getName());
+		}
+	}
+
+
 }
 

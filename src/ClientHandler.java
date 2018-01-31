@@ -8,6 +8,8 @@ public class ClientHandler implements Runnable {
 
 	private Socket connectionSock;
 	private String name;
+	private BufferedReader clientOutput;
+	private DataOutputStream clientInput;
 
 	ClientHandler(Socket connectionSock) {
 		this.connectionSock = connectionSock;
@@ -29,11 +31,12 @@ public class ClientHandler implements Runnable {
 		try {
 			// Use a BufferedReader as it reads the data stream rather than blocking until
 			// receiving an end of line character.
-			BufferedReader clientOutput = new BufferedReader(new InputStreamReader(connectionSock.getInputStream()));
-			DataOutputStream clientInput = new DataOutputStream(connectionSock.getOutputStream());
-			name = clientOutput.readLine();
+			clientOutput = new BufferedReader(new InputStreamReader(connectionSock.getInputStream()));
+			clientInput = new DataOutputStream(connectionSock.getOutputStream());
+
 			//First output from client is client name.
-			Thread.currentThread().setName(name);
+			setName(clientOutput.readLine());
+
 
 			while (true) {
 				System.out.println("Waiting for client(" + name + ") to send data.");
@@ -42,7 +45,8 @@ public class ClientHandler implements Runnable {
 					break;
 				}
 				System.out.println("Received from client:(" + name + ") " + clientMessage);
-				clientInput.writeBytes("Received: " + clientMessage + "\n");
+				Server.broadcastMessage(clientMessage);
+
 			}
 
 			clientInput.close();
@@ -56,4 +60,23 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void sendMessage(String message) {
+		try {
+			System.out.println("passing msg over socket to " + name);
+			clientInput.writeBytes(message + "\n");
+		}
+		catch (IOException e) {
+			System.out.println("Unable to send message: " + message + "\n");
+			e.printStackTrace();
+		}
+	}
 }
