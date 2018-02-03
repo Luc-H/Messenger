@@ -37,19 +37,33 @@ public class Client {
 			//First input to server is client name.
 			serverInput.writeBytes(name + "\n");
 
+			Thread readLoop = new Thread((new Runnable() {
+				@Override
+				public void run() {
+					while(!Thread.interrupted()){
+						try {
+							System.out.println(serverOutput.readLine());
+						}
+						catch (IOException e) {
+							System.err.println(e.getMessage());
+						}
+					}
+				}
+			}));
+
+			readLoop.start();
 
 			while (true) {
 				System.out.println("Enter message to send or type '!EXIT' to quit.");
 				message = inKb.nextLine();
-				serverInput.writeBytes(message + "\n");
 				if (message.equals("!EXIT")) {
 					break;
 				}
-
-				String response = serverOutput.readLine();
-				System.out.println(response);
+				serverInput.writeBytes(message + "\n");
 			}
 
+			inKb.close();
+			readLoop.interrupt();
 			connectionSock.close();
 			serverOutput.close();
 			serverInput.close();
@@ -59,6 +73,7 @@ public class Client {
 		}
 
 	}
+
 
 
 }
